@@ -4,6 +4,7 @@ const path = require("path");
 const port = 3000;
 const Campground = require("./models/campground");
 const methodOverride = require("method-override");
+const ejsMate = require("ejs-mate");
 
 const mongoose = require("mongoose");
 mongoose.connect("mongodb://localhost:27017/yelp-camp", {
@@ -22,6 +23,8 @@ app.set("views", path.join(__dirname, "views"));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
+//(8) For template we Add EJS-MATE
+app.engine("ejs", ejsMate);
 
 //(1) Home
 app.get("/", (req, res) => {
@@ -70,11 +73,11 @@ app.put("/campgrounds/:id", async (req, res) => {
   res.redirect(`/campgrounds/${campground._id}`);
 });
 
-//(7) DELETE ROUTE.. WE MAKE A FAKE FORM ACTION IN SHOW.EJS 
+//(7) DELETE ROUTE.. WE MAKE A FAKE FORM ACTION IN SHOW.EJS
 app.delete("/campgrounds/:id", async (req, res) => {
   const { id } = req.params;
   await Campground.findByIdAndDelete(id);
-  res.redirect('/campgrounds')
+  res.redirect("/campgrounds");
 });
 app.listen(port, () => {
   console.log("CONNECTED TO PORT: " + port);
