@@ -44,10 +44,14 @@ app.get("/campgrounds/new", (req, res) => {
 });
 //NOW WE SET UP THE POST ROUTE FPR THE NEW FPRM
 //(5) To parse the req.body we use express.urlencoded line above
-app.post("/campgrounds", async (req, res) => {
-  const campground = new Campground(req.body.campground);
-  await campground.save();
-  res.redirect(`/campgrounds/${campground._id}`);
+app.post("/campgrounds", async (req, res, next) => {
+  try {
+    const campground = new Campground(req.body.campground);
+    await campground.save();
+    res.redirect(`/campgrounds/${campground._id}`);
+  } catch (e) {
+    next(e);
+  }
 });
 
 //(3) Details page for our Campground
@@ -78,6 +82,12 @@ app.delete("/campgrounds/:id", async (req, res) => {
   const { id } = req.params;
   await Campground.findByIdAndDelete(id);
   res.redirect("/campgrounds");
+});
+
+//(8) We have started Handling Errors
+//(8.1) We wrap Async functions in try catch blocks
+app.use((err, req, res, next) => {
+  res.send("OHH BOY SOMETHING WENT WRONG");
 });
 app.listen(port, () => {
   console.log("CONNECTED TO PORT: " + port);
