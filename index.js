@@ -8,7 +8,9 @@ const ejsMate = require("ejs-mate");
 const catchAsync = require("./utils/catchAsync");
 const ExpressError = require("./utils/ExpressError");
 const mongoose = require("mongoose");
-const { campgroundSchema } = require("./schemas.js");
+const { campgroundSchema, reviewSchema } = require("./schemas.js");
+const Review = require("./models/review");
+
 mongoose.connect("mongodb://localhost:27017/yelp-camp", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -28,9 +30,23 @@ app.use(methodOverride("_method"));
 //(8) For template we Add EJS-MATE
 app.engine("ejs", ejsMate);
 
+//JOI SCHEMA MIDDLEWARE for campground Schema
 const validateCampground = (req, res, next) => {
   const { error } = campgroundSchema.validate(req.body);
+  //First check for an error as we get back from campgroundSchema
   if (error) {
+    const msg = error.details.map((el) => el.message).join(",");
+    throw new ExpressError(msg, 400);
+  } else {
+    next();
+  }
+};
+//JOI SCHEMA MIDDLEWARE for review schema
+const validateReview = (req, res, next) => {
+  //First check for an error as we get back from reviewSchema
+  const { error } = reviewSchema.validate(req.body);
+  if (error) {
+    // console.log(error)
     const msg = error.details.map((el) => el.message).join(",");
     throw new ExpressError(msg, 400);
   } else {
@@ -76,7 +92,8 @@ app.get(
   "/campgrounds/:id",
   catchAsync(async (req, res) => {
     const { id } = req.params;
-    const campgrounds = await Campground.findById(id);
+    const campgrounds = await Campground.findById(id).populate('reviews');
+    console.log(campgrounds)
     res.render("campgrounds/show", { campgrounds });
   })
 );
@@ -114,6 +131,23 @@ app.delete(
   })
 );
 
+//Creating Review section
+/* We don't need a CRUD but we will follow - POST / campgrounds/:id/review,
+So we associate the reviews with the specific campground using its ID
+ */
+app.post(
+  "/campgrounds/:id/reviews",
+  validateReview,
+  catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const campground = await Campground.findById(id);
+    const review = new Review(req.body.review);
+    campground.reviews.push(review);
+    await review.save();
+    await campground.save();
+    res.redirect(`/campgrounds/${campground._id}`);
+  })
+);
 //(9) Some request and we dont recognize. Remeber the order is very important
 // When we pass error in next it hits the Error Handler (bottom one - app.use )
 app.all("*", (req, res, next) => {
