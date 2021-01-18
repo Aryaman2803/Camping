@@ -29,7 +29,7 @@
                     <a href="/campgrounds">All Campgrounds</a>
                 </div>
             </div>
-          
+
         </div>
         <div class="col-6">
             <h2>Leave a Review</h2>
@@ -57,6 +57,9 @@
                         <p class="card-text">Review:
                             <%= review.body %>
                         </p>
+                        <form action="/campgrounds/<%=campgrounds._id%>/reviews/<%=review._id%>?_method=DELETE" method="POST">
+                        <button class="btn btn-sm btn-danger">Delete</button>
+                        </form>
 
                     </div>
                 </div>

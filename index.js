@@ -92,8 +92,7 @@ app.get(
   "/campgrounds/:id",
   catchAsync(async (req, res) => {
     const { id } = req.params;
-    const campgrounds = await Campground.findById(id).populate('reviews');
-    console.log(campgrounds)
+    const campgrounds = await Campground.findById(id).populate("reviews");
     res.render("campgrounds/show", { campgrounds });
   })
 );
@@ -148,6 +147,25 @@ app.post(
     res.redirect(`/campgrounds/${campground._id}`);
   })
 );
+//Deleting reviews
+/*We are doing like this so we can remove that reference whatever the review is in the campground 
+and we want to remove the review itself.
+A) Deleting from a review Review DB is easy just findByIdAndDelete.
+B) We also need to delete the reference Id of that review in the campground in a array of object ids */
+app.delete(
+  "/campgrounds/:id/reviews/:reviewId",
+  catchAsync(async (req, res) => {
+    const { id, reviewId } = req.params;
+    await Campground.findByIdAndUpdate(
+      id,
+      { $pull: { reviews: reviewId } },
+      { useFindAndModify: false }
+    );
+    await Review.findByIdAndDelete(reviewId);
+    res.redirect(`/campgrounds/${id}`);
+  })
+);
+
 //(9) Some request and we dont recognize. Remeber the order is very important
 // When we pass error in next it hits the Error Handler (bottom one - app.use )
 app.all("*", (req, res, next) => {
