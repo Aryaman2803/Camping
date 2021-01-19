@@ -38,6 +38,8 @@ router.get("/new", (req, res) => {
 });
 //NOW WE SET UP THE POST ROUTE FPR THE NEW FPRM
 //(5) To parse the req.body we use express.urlencoded line above
+//(11.2) Here we are using flash messege by Key : Value pair
+//(11.3) Then we make sure we are displaying that information in our Template=> So we set it in index.js
 router.post(
   "/",
   validateCampground,
@@ -46,6 +48,7 @@ router.post(
     // throw new ExpressError("Invalid Campground data", 400);
     const campground = new Campground(req.body.campground);
     await campground.save();
+    req.flash("success", "Successfully made a new campground!");
     res.redirect(`/campgrounds/${campground._id}`);
   })
 );
@@ -56,6 +59,10 @@ router.get(
   catchAsync(async (req, res) => {
     const { id } = req.params;
     const campgrounds = await Campground.findById(id).populate("reviews");
+    if (!campgrounds) {
+      req.flash("error", "Cannot find that campground");
+      return res.redirect("/campgrounds");
+    }
     res.render("campgrounds/show", { campgrounds });
   })
 );
@@ -67,6 +74,10 @@ router.get(
   catchAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id);
+    if (!campgrounds) {
+      req.flash("error", "Cannot find that campground");
+      return res.redirect("/campgrounds");
+    }
     res.render("campgrounds/edit", { campground });
   })
 );
@@ -79,6 +90,7 @@ router.put(
     const campground = await Campground.findByIdAndUpdate(id, {
       ...req.body.campground,
     });
+    req.flash("success", "Successfully updated campground!");
     res.redirect(`/campgrounds/${campground._id}`);
   })
 );
@@ -89,6 +101,7 @@ router.delete(
   catchAsync(async (req, res) => {
     const { id } = req.params;
     await Campground.findByIdAndDelete(id);
+    req.flash("success", "Successfully deleted review");
     res.redirect("/campgrounds");
   })
 );
