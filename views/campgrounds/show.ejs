@@ -17,17 +17,24 @@
                     <li class="list-group-item text-muted">
                         <%= campgrounds.location %>
                     </li>
+                    <li class="list-group-item ">Submitted by
+                        <%= campgrounds.author.username %>
+                    </li>
                     <li class="list-group-item">$<%= campgrounds.price %>/night</li>
                 </ul>
-                <div class="card-body">
-                    <a class="card-link btn btn-info" href="/campgrounds/<%=campgrounds._id%>/edit">Edit</a>
-                    <form class="d-inline" action="/campgrounds/<%=campgrounds._id%>?_method=DELETE" method="POST">
-                        <button class="btn btn-danger">Delete</button>
-                    </form>
-                </div>
-                <div class="card-footer text-muted">
-                    <a href="/campgrounds">All Campgrounds</a>
-                </div>
+                <!-- To authenticate, we need Campground.author(its the user id) and currentUser._id (signed in user id).
+                If both are same then we show the edit and delete button else hide it-->
+                <% if(currentUser && campgrounds.author.equals(currentUser._id)){ %>
+                    <div class="card-body">
+                        <a class="card-link btn btn-info" href="/campgrounds/<%=campgrounds._id%>/edit">Edit</a>
+                        <form class="d-inline" action="/campgrounds/<%=campgrounds._id%>?_method=DELETE" method="POST">
+                            <button class="btn btn-danger">Delete</button>
+                        </form>
+                    </div>
+                    <% } %>
+                        <div class="card-footer text-muted">
+                            <a href="/campgrounds">All Campgrounds</a>
+                        </div>
             </div>
 
         </div>
@@ -57,8 +64,9 @@
                         <p class="card-text">Review:
                             <%= review.body %>
                         </p>
-                        <form action="/campgrounds/<%=campgrounds._id%>/reviews/<%=review._id%>?_method=DELETE" method="POST">
-                        <button class="btn btn-sm btn-danger">Delete</button>
+                        <form action="/campgrounds/<%=campgrounds._id%>/reviews/<%=review._id%>?_method=DELETE"
+                            method="POST">
+                            <button class="btn btn-sm btn-danger">Delete</button>
                         </form>
 
                     </div>
