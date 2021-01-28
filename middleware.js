@@ -1,6 +1,7 @@
 const { campgroundSchema, reviewSchema } = require("./schemas.js");
 const ExpressError = require("./utils/ExpressError");
 const Campground = require("./models/campground");
+const Review = require("./models/review.js");
 
 /**We are creating this new file so that we can use it in multiple locations.
  * Since after we are logged in we need to be able to acces the reviews too.
@@ -36,7 +37,7 @@ module.exports.validateCampground = (req, res, next) => {
   }
 };
 
-//MIDDLEWARE for authorization of user
+//MIDDLEWARE for authorization of user for campground
 module.exports.isAuthor = async (req, res, next) => {
   //Instead of just finding and updating the campground , we check the camp Id and author Id
   const { id } = req.params;
@@ -48,6 +49,17 @@ module.exports.isAuthor = async (req, res, next) => {
   next();
 };
 
+//MIDDLEWARE for authorization of user for review
+module.exports.isReviewAuthor = async (req, res, next) => {
+  //Instead of just finding and updating the campground , we check the camp Id and author Id
+  const { reviewId } = req.params;
+  const review = await Review.findById(reviewId);
+  if (!review.author.equals(req.user._id)) {
+    req.flash("error", "You do not have permission!");
+    return res.redirect(`/campgrounds/${campground._id}`);
+  }
+  next();
+};
 //REVIEW SCHEMA
 
 //JOI SCHEMA MIDDLEWARE for review schema
