@@ -1,3 +1,6 @@
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 const express = require("express");
 const app = express();
 const path = require("path");
@@ -73,8 +76,8 @@ passport.deserializeUser(User.deserializeUser());
 //Our Flash -connect middleware
 app.use((req, res, next) => {
   //It shows the session details
-  // console.log(req.session) 
-  
+  // console.log(req.session)
+
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   res.locals.currentUser = req.user;

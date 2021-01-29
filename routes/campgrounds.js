@@ -4,6 +4,9 @@ const campgrounds = require("../controllers/campgrounds");
 const catchAsync = require("../utils/catchAsync");
 const Campground = require("../models/campground");
 const { isLoggedIn, isAuthor, validateCampground } = require("../middleware");
+const multer = require("multer");
+const {storage} = require('../cloudinary/index')
+const upload = multer({ storage });
 
 /**
  * *After moving the Route detials in controllers directory, we Restructure Routes even further
@@ -12,11 +15,16 @@ const { isLoggedIn, isAuthor, validateCampground } = require("../middleware");
 router
   .route("/")
   .get(catchAsync(campgrounds.index))
-  .post(
-    isLoggedIn,
-    validateCampground,
-    catchAsync(campgrounds.createCampground)
-  );
+  .post(upload.array("image"), (req, res) => {
+    console.log(req.body,req.files);
+    res.send(req.files)
+    
+  });
+// .post(
+//   isLoggedIn,
+//   validateCampground,
+//   catchAsync(campgrounds.createCampground)
+// );
 
 // !Moved above '/:id'
 router.get("/new", isLoggedIn, campgrounds.renderNewForm);
