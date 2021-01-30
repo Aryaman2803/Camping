@@ -1,4 +1,4 @@
-//Server side database validation 
+//Server side database validation
 const Joi = require("joi");
 
 module.exports.campgroundSchema = Joi.object({
@@ -9,6 +9,7 @@ module.exports.campgroundSchema = Joi.object({
     description: Joi.string().required(),
     location: Joi.string().required(),
   }).required(),
+  deleteImages: Joi.array(),
 });
 
 module.exports.reviewSchema = Joi.object({
