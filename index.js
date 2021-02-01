@@ -18,6 +18,8 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user");
 
+const mongoSanitize = require('express-mongo-sanitize')
+
 mongoose.connect("mongodb://localhost:27017/yelp-camp", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -40,6 +42,7 @@ app.engine("ejs", ejsMate);
 
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use(mongoSanitize())
 //(10) Setting up bare minimum express-session
 /*(10.1) Right now we are storing in browser memory (just for development porpuses),
  later we will store in Mongo*/
