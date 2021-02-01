@@ -1,20 +1,32 @@
 <% layout('layout/Boilerplate') -%>
     <h1>All Campgrounds</h1>
- 
+
     <% for (let campground of campgrounds){ %>
         <div class="card mb-3">
             <div class="row">
                 <div class="col-md-4">
-                    <img class="img-fluid" src="<%=campground.images[0].url%>" alt="">
+                    <% if(campground.images.length){ %>
+                        <img class="img-fluid" src="<%=campground.images[0].url%>" alt="">
+                        <% } else {%>
+                            <img src="https://res.cloudinary.com/erenyeager/image/upload/v1612162410/Camping/ossgu6bzxzmxquoknokj.jpg"
+                                class="img-fluid" alt="">
+                            <% } %>
                 </div>
                 <div class="col-md-8">
                     <div class="card-body">
-                        <h5 class="card-title"><%=campground.title %> </h5>
-                        <p class="card-text"><%=campground.description %> </p>
+                        <h5 class="card-title">
+                            <%=campground.title %>
+                        </h5>
                         <p class="card-text">
-                            <small class="text-muted"><%=campground.location%> </small>
+                            <%=campground.description %>
                         </p>
-                        <a href="/campgrounds/<%=campground._id%>" class="btn btn-primary">View <%= campground.title %> </a>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                <%=campground.location%>
+                            </small>
+                        </p>
+                        <a href="/campgrounds/<%=campground._id%>" class="btn btn-primary">View <%= campground.title %>
+                        </a>
                     </div>
                 </div>
             </div>

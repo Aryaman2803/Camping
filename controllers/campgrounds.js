@@ -1,5 +1,8 @@
 const Campground = require("../models/campground");
 const { cloudinary } = require("../cloudinary");
+const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
+const mapBoxToken = process.env.MAPBOX_TOKEN;
+const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 
 module.exports.index = async (req, res) => {
   const campgrounds = await Campground.find();
@@ -15,10 +18,19 @@ module.exports.renderNewForm = (req, res) => {
 //(11.2) Here we are using flash messege by Key : Value pair
 //(11.3) Then we make sure we are displaying that information in our Template=> So we set it in index.js
 module.exports.createCampground = async (req, res, next) => {
-  // if (!req.body.campground)
-  // throw new ExpressError("Invalid Campground data", 400);
+  //GEOCODING
+  const geoData = await geocoder
+    .forwardGeocode({
+      query: req.body.campground.location,
+      limit: 1,
+    })
+    .send();
+
+  if (!req.body.campground)
+    throw new ExpressError("Invalid Campground data", 400);
 
   const campground = new Campground(req.body.campground);
+  campground.geometry = geoData.body.features[0].geometry;
   // req.user is given by passport
   //Later we add author which stores the Id of User
   // req.files is given by multer which is used to store image url
@@ -28,7 +40,7 @@ module.exports.createCampground = async (req, res, next) => {
   }));
   campground.author = req.user._id;
   await campground.save();
-  // console.log(campground)
+  console.log(campground)
   req.flash("success", "Successfully made a new campground!");
   res.redirect(`/campgrounds/${campground._id}`);
 };
