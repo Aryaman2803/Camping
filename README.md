@@ -3,6 +3,10 @@
 Website where users can create and review campgrounds. In order to review or create a campground, you must have an account.
 This project was created using Node.js, Express, MongoDB, and Bootstrap. Passport.js was used to handle authentication.
 
+<ins></ins>
+To see the app in action, go to
+https://campinggrounds.herokuapp.com/
+<ins></ins>
 ## Features
 * Authentication:
   * User login with username and password
@@ -48,7 +52,8 @@ npm install
 ```
 #### Check the .env file and the root of the project and add the following:
 ```
-DATABASEURL='<url>'
-API_KEY=''<key>
-API_SECRET='<secret>'
+  
+CLOUDINARY_CLOUD_NAME=<name>
+CLOUDINARY_KEY=<key>
+CLOUDINARY_SECRET=<secret>
 ```
