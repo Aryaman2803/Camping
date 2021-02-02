@@ -4,9 +4,9 @@ Website where users can create and review campgrounds. In order to review or cre
 This project was created using Node.js, Express, MongoDB, and Bootstrap. Passport.js was used to handle authentication.
 
 <ins></ins>
-To see the app in action, go to
-https://campinggrounds.herokuapp.com/
+To see the app in action, go to- https://campinggrounds.herokuapp.com/
 <ins></ins>
+
 ## Features
 * Authentication:
   * User login with username and password
